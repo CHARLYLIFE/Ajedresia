@@ -22,11 +22,13 @@ h2 {
     font-size: 1.2rem;
 }
 
+/* Forzamos el tamaño y visibilidad del tablero y sus piezas */
 #myBoard {
+    width: 360px;
+    height: 360px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
     border-radius: 4px;
     overflow: hidden;
-    max-width: 90vw;
 }
 
 .controls {
