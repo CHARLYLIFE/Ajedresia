@@ -2,26 +2,29 @@ let board = null;
 let game = new Chess();
 let lastBestMove = null;
 
-// Cargamos el motor Stockfish lite local
-const stockfish = new Worker('stockfish-19-lite.js');
+// Función que consulta al Stockfish real y súper inteligente en la nube
+async function pedirSugerenciaStockfish(fen) {
+    document.getElementById('bestMove').innerText = "Calculando (Stockfish Pro)...";
+    lastBestMove = null;
 
-stockfish.onmessage = function(event) {
-    let message = event.data;
-    
-    if (message && message.startsWith('bestmove')) {
-        let partes = message.split(' ');
-        lastBestMove = partes[1]; // Ejemplo: "e2e4"
-        
-        let label = document.getElementById('bestMove');
-        if (lastBestMove) {
-            label.innerText = lastBestMove.toUpperCase();
+    try {
+        // Consultamos a profundidad 12 para una jugada ultra precisa de gran ELO
+        const response = await fetch(`https://stockfish.online/api/s/v2.php?fen=${encodeURIComponent(fen)}&depth=12`);
+        const data = await response.json();
+
+        if (data.success && data.bestmove) {
+            // Extraemos la jugada exacta (ej: e2e4)
+            const partes = data.bestmove.split(' ');
+            lastBestMove = partes[1] ? partes[1] : partes[0];
+            
+            document.getElementById('bestMove').innerText = lastBestMove.toUpperCase();
         } else {
-            label.innerText = "Ninguna";
+            document.getElementById('bestMove').innerText = "Error en la IA";
         }
+    } catch (error) {
+        document.getElementById('bestMove').innerText = "Sin conexión a internet";
     }
-};
-
-stockfish.postMessage('uci');
+}
 
 function onDragStart (source, piece, board, orientation) {
     if (game.game_over()) return false;
@@ -64,19 +67,19 @@ function updateStatus () {
     document.getElementById('status').innerText = status;
     document.getElementById('fen').value = game.fen();
 
+    // Si la partida sigue activa, le pedimos la jugada a la súper IA
     if (!game.game_over()) {
-        document.getElementById('bestMove').innerText = "Calculando...";
-        lastBestMove = null;
-        stockfish.postMessage(`position fen ${game.fen()}`);
-        stockfish.postMessage('go depth 10');
+        pedirSugerenciaStockfish(game.fen());
     }
 }
 
-// Configuración con imágenes corregidas desde la CDN oficial
+// Configuración con las imágenes de las piezas arregladas
 let config = {
     draggable: true,
     position: 'start',
-    pieceTheme: 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png',
+    pieceTheme: function(piece) {
+        return 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/' + piece + '.png';
+    },
     onDragStart: onDragStart,
     onDrop: onDrop,
     onSnapEnd: onSnapEnd
@@ -95,10 +98,10 @@ document.getElementById('flipBtn').addEventListener('click', () => {
     board.flip();
 });
 
-// Botón nuevo: Aplica la jugada de la IA automáticamente en el tablero
+// Botón para que Stockfish mueva automáticamente por ti en tu tablero
 document.getElementById('autoMoveBtn').addEventListener('click', () => {
     if (!lastBestMove) {
-        alert("Espera a que la IA termine de calcular.");
+        alert("Espera a que la super IA termine de calcular.");
         return;
     }
 
@@ -115,6 +118,6 @@ document.getElementById('autoMoveBtn').addEventListener('click', () => {
         board.position(game.fen());
         updateStatus();
     } else {
-        alert("No se pudo aplicar el movimiento automáticamente.");
+        alert("No se pudo aplicar el movimiento.");
     }
 });
