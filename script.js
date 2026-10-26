@@ -1,22 +1,26 @@
 let board = null;
 let game = new Chess();
+let lastBestMove = null;
 
-// Cargamos el motor Stockfish lite que subiste a GitHub
+// Cargamos el motor Stockfish lite local
 const stockfish = new Worker('stockfish-19-lite.js');
 
-// Escuchamos la respuesta de la IA local
 stockfish.onmessage = function(event) {
     let message = event.data;
     
     if (message && message.startsWith('bestmove')) {
         let partes = message.split(' ');
-        let mejorJugada = partes[1]; // Ejemplo: e2e4
+        lastBestMove = partes[1]; // Ejemplo: "e2e4"
         
-        document.getElementById('bestMove').innerText = mejorJugada ? mejorJugada.toUpperCase() : "Ninguna";
+        let label = document.getElementById('bestMove');
+        if (lastBestMove) {
+            label.innerText = lastBestMove.toUpperCase();
+        } else {
+            label.innerText = "Ninguna";
+        }
     }
 };
 
-// Inicializamos el motor
 stockfish.postMessage('uci');
 
 function onDragStart (source, piece, board, orientation) {
@@ -60,18 +64,19 @@ function updateStatus () {
     document.getElementById('status').innerText = status;
     document.getElementById('fen').value = game.fen();
 
-    // Si la partida sigue, le pedimos la jugada a la IA localmente
     if (!game.game_over()) {
         document.getElementById('bestMove').innerText = "Calculando...";
-        
+        lastBestMove = null;
         stockfish.postMessage(`position fen ${game.fen()}`);
-        stockfish.postMessage('go depth 10'); // Profundidad de cálculo ajustable
+        stockfish.postMessage('go depth 10');
     }
 }
 
+// Configuración con imágenes corregidas desde la CDN oficial
 let config = {
     draggable: true,
     position: 'start',
+    pieceTheme: 'https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/img/chesspieces/wikipedia/{piece}.png',
     onDragStart: onDragStart,
     onDrop: onDrop,
     onSnapEnd: onSnapEnd
@@ -88,4 +93,28 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 
 document.getElementById('flipBtn').addEventListener('click', () => {
     board.flip();
+});
+
+// Botón nuevo: Aplica la jugada de la IA automáticamente en el tablero
+document.getElementById('autoMoveBtn').addEventListener('click', () => {
+    if (!lastBestMove) {
+        alert("Espera a que la IA termine de calcular.");
+        return;
+    }
+
+    let fromSquare = lastBestMove.substring(0, 2);
+    let toSquare = lastBestMove.substring(2, 4);
+
+    let move = game.move({
+        from: fromSquare,
+        to: toSquare,
+        promotion: 'q'
+    });
+
+    if (move !== null) {
+        board.position(game.fen());
+        updateStatus();
+    } else {
+        alert("No se pudo aplicar el movimiento automáticamente.");
+    }
 });
