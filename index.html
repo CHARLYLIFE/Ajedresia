@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#101a22" />
+    <meta name="description" content="Juega ajedrez contra Stockfish 19 Full, sin limitación de fuerza." />
+    <title>ChessMax 3000+</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <div class="brand-icon" aria-hidden="true">♞</div>
+          <div>
+            <div class="brand-name">CHESSMAX <span>3000+</span></div>
+            <div class="brand-caption">AJEDREZ · MOTOR STOCKFISH 19 FULL</div>
+          </div>
+        </div>
+        <div class="engine-pill" id="engine-pill"><span class="pulse-dot"></span><span id="engine-label">Cargando motor…</span></div>
+      </header>
+
+      <main class="layout">
+        <section class="play-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">PARTIDA LOCAL</p>
+              <h1>Juega contra la máquina</h1>
+              <p class="subheading">Sin internet después de instalar el APK.</p>
+            </div>
+            <div class="side-indicator" id="side-indicator"><span class="side-piece">♙</span><span id="side-label">Sin elegir</span></div>
+          </div>
+
+          <div class="board-frame">
+            <div class="board-topline"><span id="player-top-label">TÚ</span><span class="board-tag">8 × 8</span></div>
+            <div class="chessboard" id="chessboard" role="grid" aria-label="Tablero de ajedrez"></div>
+            <div class="board-bottomline"><span id="player-bottom-label">ELIGE UN COLOR</span><span class="board-tag" id="turn-count">0 medios movimientos</span></div>
+          </div>
+
+          <div class="status-row">
+            <div class="status-icon" id="status-icon">♟</div>
+            <div class="status-copy"><div id="game-status" aria-live="polite">Elige con qué color quieres jugar.</div><div id="status-detail">Stockfish 19 Full · sin límite de fuerza</div></div>
+            <div class="thinking-spinner hidden" id="thinking-spinner" aria-label="El motor está pensando"></div>
+          </div>
+
+          <div class="actions-row">
+            <button class="btn btn-primary" id="new-game-button" type="button"><span>＋</span> Nueva partida</button>
+            <button class="btn btn-secondary" id="undo-button" type="button" disabled>↶ Deshacer</button>
+            <button class="btn btn-secondary square-action" id="flip-button" type="button" aria-label="Girar tablero" title="Girar tablero">⇅</button>
+          </div>
+        </section>
+
+        <aside class="info-panel">
+          <section class="info-card engine-card">
+            <div class="card-heading"><span class="card-icon">♜</span><div><h2>Motor de ajedrez</h2><p>Stockfish 19 · versión Full</p></div></div>
+            <div class="metric-row"><span>Fuerza</span><strong>Máxima, sin handicap</strong></div>
+            <div class="metric-row"><span>Limitador Elo</span><strong class="green-text">Desactivado</strong></div>
+            <div class="metric-row"><label for="depth-select">Profundidad</label><select id="depth-select"><option value="18">18 · rápida</option><option value="22">22 · muy alta</option><option value="24" selected>24 · máxima recomendada</option><option value="28">28 · extrema</option></select></div>
+            <p class="small-note">Más profundidad suele mejorar el cálculo, pero puede tardar bastante en posiciones complicadas. El tiempo y la fuerza real dependen del teléfono.</p>
+          </section>
+
+          <section class="info-card moves-card">
+            <div class="card-heading"><span class="card-icon">☷</span><div><h2>Movimientos</h2><p>Registro de la partida</p></div><span class="move-counter" id="move-counter">0</span></div>
+            <div class="moves-list" id="moves-list"><div class="empty-moves">Los movimientos aparecerán aquí cuando empiece la partida.</div></div>
+          </section>
+
+          <section class="footer-note"><span class="footer-mark">ⓘ</span><p>La aplicación valida las reglas oficiales: jaque, mate, tablas, enroque, captura al paso y promoción. El motor trabaja en el dispositivo.</p></section>
+        </aside>
+      </main>
+      <footer class="app-footer"><span>CHESSMAX 3000+</span><span>HECHO PARA JUGAR · NO PARA APUESTAS</span></footer>
+    </div>
+
+    <div class="setup-overlay" id="setup-overlay" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+      <div class="setup-card">
+        <div class="setup-emblem">♞</div>
+        <p class="eyebrow">PREPÁRATE PARA JUGAR</p>
+        <h2 id="setup-title">Elige tu color</h2>
+        <p class="setup-copy">Tú haces una jugada y Stockfish responde automáticamente. Puedes cambiar de color al empezar otra partida.</p>
+        <div class="color-options">
+          <button class="color-option white-option" id="play-white" type="button"><span class="option-piece">♔</span><span><strong>Jugar con blancas</strong><small>Mueves primero</small></span><span class="option-arrow">→</span></button>
+          <button class="color-option black-option" id="play-black" type="button"><span class="option-piece">♚</span><span><strong>Jugar con negras</strong><small>Stockfish abre la partida</small></span><span class="option-arrow">→</span></button>
+        </div>
+        <button class="cancel-setup hidden" id="cancel-setup" type="button">Volver a la partida</button>
+        <div class="setup-engine"><span class="pulse-dot"></span> MOTOR STOCKFISH 19 FULL · MÁXIMA FUERZA</div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

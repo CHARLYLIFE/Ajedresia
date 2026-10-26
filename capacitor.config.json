@@ -1,0 +1,6 @@
+{
+  "appId": "com.chessmax.ajedrez3000",
+  "appName": "ChessMax 3000+",
+  "webDir": "dist",
+  "androidScheme": "https"
+}

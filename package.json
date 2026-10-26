@@ -1,0 +1,24 @@
+{
+  "name": "chessmax-3000-plus",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Aplicación Android de ajedrez con Stockfish 19 Full, sin limitador de fuerza.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "predev": "node scripts/copy-engine.mjs",
+    "build": "node scripts/copy-engine.mjs && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "android:sync": "npm run build && npx cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "8.5.3",
+    "@capacitor/core": "8.5.3",
+    "chess.js": "1.4.0",
+    "stockfish": "19.0.1"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3",
+    "vite": "^7.1.12"
+  }
+}
